@@ -36,16 +36,16 @@ cp .env.example .env
 
 ```bash
 # Development server with auto-reload
-uv run uvicorn app.main:app --reload --port 3334
+uv run uvicorn app.main:app --reload --port 3333
 
 # Or without reload
-uv run uvicorn app.main:app --port 3334
+uv run uvicorn app.main:app --port 3333
 ```
 
 The API will be available at:
-- API: http://localhost:3334/api
-- Swagger docs: http://localhost:3334/docs
-- ReDoc: http://localhost:3334/redoc
+- API: http://localhost:3333/api
+- Swagger docs: http://localhost:3333/docs
+- ReDoc: http://localhost:3333/redoc
 
 ## API Endpoints
 
