@@ -1,5 +1,9 @@
 from fastapi import APIRouter
 
+from app.api.users import router as users_router
+from app.api.user import router as user_router
+
 api_router = APIRouter()
 
-# Routes will be added in subsequent phases
+api_router.include_router(users_router)
+api_router.include_router(user_router)
