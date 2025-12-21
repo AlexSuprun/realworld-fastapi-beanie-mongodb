@@ -1,106 +1,115 @@
-# Conduit API - FastAPI + Beanie + MongoDB
+# ![RealWorld Example App](logo.png)
 
-RealWorld "Conduit" backend implementation using modern Python stack.
+> ### FastAPI codebase containing real world examples (CRUD, auth, advanced patterns, etc) that adheres to the [RealWorld](https://github.com/gothinkster/realworld) spec and API.
 
-## Tech Stack
 
-- **Python** 3.12+
-- **FastAPI** - Modern async web framework
-- **Beanie** - Async MongoDB ODM (built on Pydantic v2)
-- **Motor** - Async MongoDB driver
-- **python-jose** - JWT tokens
-- **passlib** - Password hashing with Argon2
-- **uv** - Fast Python package manager
+### [Demo](https://demo.realworld.io/)&nbsp;&nbsp;&nbsp;&nbsp;[RealWorld](https://github.com/gothinkster/realworld)
 
-## Setup
 
-### Prerequisites
+This codebase was created to demonstrate a fully fledged fullstack application built with FastAPI including CRUD operations, authentication, routing, pagination, and more.
+
+We've gone to great lengths to adhere to the Python community styleguides & best practices.
+
+For more information on how this works with other frontends/backends, head over to the [RealWorld](https://github.com/gothinkster/realworld) repo.
+
+
+# How it works
+
+This implementation uses FastAPI connected to a MongoDB database. Database operations are handled with Beanie ODM (async MongoDB ODM built on Pydantic v2).
+
+# Getting started
+
+## Prerequisites
 
 - Python 3.12+
-- MongoDB running on localhost:27017
+- Docker (recommended) or MongoDB installed locally
 - uv package manager
 
-### Installation
+## Environment Configuration
+
+Create a `.env` file in the root directory:
 
 ```bash
-# Install dependencies
-uv sync
-
-# Copy environment file
 cp .env.example .env
-
-# Edit .env with your settings (DATABASE_URL, SECRET)
 ```
 
-### Running
+Required environment variables:
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `DATABASE_URL` | MongoDB connection string | `mongodb://localhost:27017/conduit` |
+| `SECRET` | JWT secret key for authentication | `your-secret-key` |
+
+## MongoDB Setup (Docker - Recommended)
+
+Start MongoDB using Docker:
 
 ```bash
-# Development server with auto-reload
+docker run -d --name mongo-conduit -p 27017:27017 mongo:8
+```
+
+### With Replica Set (required for transactions)
+
+If you need transaction support, run MongoDB as a replica set:
+
+```bash
+docker run -d --name mongo-conduit -p 27017:27017 mongo:8 --replSet rs0 && sleep 2 && docker exec mongo-conduit mongosh --eval "rs.initiate()"
+```
+
+Update your connection string in `.env`:
+
+```
+DATABASE_URL=mongodb://localhost:27017/conduit?replicaSet=rs0
+```
+
+### Managing the container
+
+To stop MongoDB:
+
+```bash
+docker stop mongo-conduit
+```
+
+To start it again:
+
+```bash
+docker start mongo-conduit
+```
+
+## Installation
+
+```bash
+uv sync
+```
+
+## Running the app
+
+```bash
+# development (watch mode)
 uv run uvicorn app.main:app --reload --port 3333
 
-# Or without reload
+# production mode
 uv run uvicorn app.main:app --port 3333
 ```
 
-The API will be available at:
-- API: http://localhost:3333/api
-- Swagger docs: http://localhost:3333/docs
-- ReDoc: http://localhost:3333/redoc
+The API will be available at `http://localhost:3333/api`
 
-## API Endpoints
+## API Documentation
 
-### Authentication
-- `POST /api/users` - Register
-- `POST /api/users/login` - Login
+This project includes Swagger/OpenAPI documentation. Once the server is running, access the interactive API documentation at:
 
-### User
-- `GET /api/user` - Get current user
-- `PUT /api/user` - Update current user
+- **Swagger UI**: http://localhost:3333/docs
+- **ReDoc**: http://localhost:3333/redoc
+- **OpenAPI JSON**: http://localhost:3333/openapi.json
 
-### Articles
-- `GET /api/articles` - List articles
-- `GET /api/articles/feed` - Get feed
-- `GET /api/articles/:slug` - Get article
-- `POST /api/articles` - Create article
-- `PUT /api/articles/:slug` - Update article
-- `DELETE /api/articles/:slug` - Delete article
-- `POST /api/articles/:slug/favorite` - Favorite
-- `DELETE /api/articles/:slug/favorite` - Unfavorite
+The Swagger UI allows you to explore and test all API endpoints directly from your browser.
 
-### Comments
-- `GET /api/articles/:slug/comments` - Get comments
-- `POST /api/articles/:slug/comments` - Add comment
-- `DELETE /api/articles/:slug/comments/:id` - Delete comment
+## Test
 
-### Profiles
-- `GET /api/profiles/:username` - Get profile
-- `POST /api/profiles/:username/follow` - Follow
-- `DELETE /api/profiles/:username/follow` - Unfollow
+```bash
+# unit tests
+uv run pytest
 
-### Tags
-- `GET /api/tags` - Get all tags
-
-## Project Structure
-
+# test coverage
+uv run pytest --cov=app
 ```
-fastapi/
-├── app/
-│   ├── main.py           # FastAPI app entry point
-│   ├── config.py         # Settings management
-│   ├── database.py       # MongoDB/Beanie setup
-│   ├── models/           # Beanie document models
-│   ├── schemas/          # Pydantic DTOs
-│   ├── api/              # Route handlers
-│   ├── services/         # Business logic
-│   └── core/             # Security, dependencies
-├── tests/
-├── pyproject.toml
-└── .env.example
-```
-
-## Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `DATABASE_URL` | MongoDB connection string | `mongodb://localhost:27017/conduit` |
-| `SECRET` | JWT signing secret | `your-jwt-secret-key` |
