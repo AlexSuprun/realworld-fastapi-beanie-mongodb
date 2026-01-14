@@ -1,5 +1,5 @@
 from beanie import Document, Indexed, PydanticObjectId
-from pydantic import EmailStr
+from pydantic import EmailStr, Field
 
 
 class User(Document):
@@ -8,9 +8,11 @@ class User(Document):
     password: str
     bio: str = ""
     image: str | None = None
-    followers_ids: list[PydanticObjectId] = []
-    following_ids: list[PydanticObjectId] = []
-    articles_liked_ids: list[PydanticObjectId] = []
+    followers_ids: list[PydanticObjectId] = Field(default=[], alias="followersIds")
+    following_ids: list[PydanticObjectId] = Field(default=[], alias="followingIds")
+    articles_liked_ids: list[PydanticObjectId] = Field(default=[], alias="articlesLikedIds")
 
     class Settings:
         name = "users"
+
+    model_config = {"populate_by_name": True}

@@ -26,8 +26,8 @@ async def follow_user(username: str, current_user: User) -> ProfileDto:
         raise NotFoundException("user not found")
 
     if target_user.id not in current_user.following_ids:
-        await current_user.update({"$addToSet": {"following_ids": target_user.id}})
-        await target_user.update({"$addToSet": {"followers_ids": current_user.id}})
+        await current_user.update({"$addToSet": {"followingIds": target_user.id}})
+        await target_user.update({"$addToSet": {"followersIds": current_user.id}})
 
     return ProfileDto(
         username=target_user.username,
@@ -43,8 +43,8 @@ async def unfollow_user(username: str, current_user: User) -> ProfileDto:
         raise NotFoundException("user not found")
 
     if target_user.id in current_user.following_ids:
-        await current_user.update({"$pull": {"following_ids": target_user.id}})
-        await target_user.update({"$pull": {"followers_ids": current_user.id}})
+        await current_user.update({"$pull": {"followingIds": target_user.id}})
+        await target_user.update({"$pull": {"followersIds": current_user.id}})
 
     return ProfileDto(
         username=target_user.username,

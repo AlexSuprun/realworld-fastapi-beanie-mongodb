@@ -104,16 +104,16 @@ async def delete_article(article: Article) -> None:
 
 async def favorite_article(article: Article, user: User) -> Article:
     if user.id not in article.favourited_user_ids:
-        await article.update({"$addToSet": {"favourited_user_ids": user.id}})
-        await user.update({"$addToSet": {"articles_liked_ids": article.id}})
+        await article.update({"$addToSet": {"favouritedUserIds": user.id}})
+        await user.update({"$addToSet": {"articlesLikedIds": article.id}})
         article.favourited_user_ids.append(user.id)
     return article
 
 
 async def unfavorite_article(article: Article, user: User) -> Article:
     if user.id in article.favourited_user_ids:
-        await article.update({"$pull": {"favourited_user_ids": user.id}})
-        await user.update({"$pull": {"articles_liked_ids": article.id}})
+        await article.update({"$pull": {"favouritedUserIds": user.id}})
+        await user.update({"$pull": {"articlesLikedIds": article.id}})
         article.favourited_user_ids.remove(user.id)
     return article
 
@@ -131,19 +131,19 @@ async def list_articles(
     if author:
         author_user = await User.find_one(User.username == author)
         if author_user:
-            query["author_id"] = author_user.id
+            query["authorId"] = author_user.id
         else:
             return [], 0
 
     if favorited:
         favorited_user = await User.find_one(User.username == favorited)
         if favorited_user:
-            query["favourited_user_ids"] = favorited_user.id
+            query["favouritedUserIds"] = favorited_user.id
         else:
             return [], 0
 
     if tag:
-        query["tag_list"] = tag
+        query["tagList"] = tag
 
     articles = await Article.find(query).sort(-Article.created_at).skip(offset).limit(limit).to_list()
     total = await Article.find(query).count()
@@ -155,7 +155,7 @@ async def get_feed(user: User, limit: int = 10, offset: int = 0) -> tuple[list[A
     if not user.following_ids:
         return [], 0
 
-    query = {"author_id": {"$in": user.following_ids}}
+    query = {"authorId": {"$in": user.following_ids}}
     articles = await Article.find(query).sort(-Article.created_at).skip(offset).limit(limit).to_list()
     total = await Article.find(query).count()
 
