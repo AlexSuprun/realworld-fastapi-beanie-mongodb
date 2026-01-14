@@ -2,9 +2,9 @@ from fastapi import APIRouter
 
 from app.core.deps import CurrentUser
 from app.core.security import create_access_token
-from app.schemas.user import UpdateUserRequest, UserResponse
+from app.schemas.user import PasswordChangeRequest, UpdateUserRequest, UserResponse
 from app.services.auth import build_user_dto
-from app.services.user import update_user
+from app.services.user import change_password, update_user
 
 router = APIRouter(prefix="/user", tags=["User"])
 
@@ -23,3 +23,15 @@ async def update_current_user(
     updated_user = await update_user(current_user, request.user)
     token = create_access_token(str(updated_user.id), updated_user.email)
     return UserResponse(user=build_user_dto(updated_user, token))
+
+
+@router.put("/password")
+async def change_user_password(
+    current_user: CurrentUser,
+    request: PasswordChangeRequest,
+) -> dict:
+    return await change_password(
+        current_user,
+        request.user.currentPassword,
+        request.user.newPassword,
+    )

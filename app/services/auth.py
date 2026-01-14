@@ -30,7 +30,12 @@ async def login_user(email: str, password: str) -> tuple[User, str]:
     if user is None:
         raise UnauthorizedException("password and email do not match")
 
-    if not verify_password(password, user.password):
+    try:
+        if not verify_password(password, user.password):
+            raise UnauthorizedException("password and email do not match")
+    except UnauthorizedException:
+        raise
+    except Exception:
         raise UnauthorizedException("password and email do not match")
 
     token = create_access_token(str(user.id), user.email)

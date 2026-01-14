@@ -41,3 +41,12 @@ class UserDto(BaseModel):
 
 class UserResponse(BaseModel):
     user: UserDto
+
+
+class PasswordChangeDto(BaseModel):
+    currentPassword: str
+    newPassword: str
+
+
+class PasswordChangeRequest(BaseModel):
+    user: PasswordChangeDto
