@@ -106,7 +106,6 @@ async def favorite_article(article: Article, user: User) -> Article:
     if user.id not in article.favourited_user_ids:
         await article.update({"$addToSet": {"favouritedUserIds": user.id}})
         await user.update({"$addToSet": {"articlesLikedIds": article.id}})
-        article.favourited_user_ids.append(user.id)
     return article
 
 
@@ -114,7 +113,6 @@ async def unfavorite_article(article: Article, user: User) -> Article:
     if user.id in article.favourited_user_ids:
         await article.update({"$pull": {"favouritedUserIds": user.id}})
         await user.update({"$pull": {"articlesLikedIds": article.id}})
-        article.favourited_user_ids.remove(user.id)
     return article
 
 
